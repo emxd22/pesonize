@@ -1,5 +1,7 @@
 # PESOnize
 
+![PESOnize logo](Pesonized.png)
+
 PESOnize is a small browser-based image tool for creating a framed profile-style image. Users upload an image, crop it to a square, apply the `Pesonized.png` overlay, and download the result as a PNG.
 
 ## Features
@@ -14,7 +16,7 @@ PESOnize is a small browser-based image tool for creating a framed profile-style
 
 ```text
 .
-|-- index.php          # Main PESOnize page and client-side app logic
+|-- index.html         # Main PESOnize page and client-side app logic
 |-- cropper.min.css    # Cropper.js styles
 |-- cropper.min.js     # Cropper.js library
 |-- Pesonized.png      # Frame overlay image
@@ -23,7 +25,7 @@ PESOnize is a small browser-based image tool for creating a framed profile-style
 
 ## Requirements
 
-- XAMPP, Apache, or another local web server that can serve PHP files.
+- XAMPP, Apache, or another local web server.
 - A modern browser with JavaScript enabled.
 
 The app runs entirely in the browser after the page loads. It does not require a database or server-side image processing.
