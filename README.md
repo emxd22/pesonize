@@ -18,7 +18,7 @@ PESOnize is a small browser-based image tool for creating a framed profile-style
 |-- cropper.min.css    # Cropper.js styles
 |-- cropper.min.js     # Cropper.js library
 |-- Pesonized.png      # Frame overlay image
-`-- PESOnize.md          # Project documentation
+`-- README.md          # Project documentation
 ```
 
 ## Requirements
