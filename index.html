@@ -2,253 +2,840 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PESOnize</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PESOnize creates framed Labor Day Job Fair profile images in your browser.">
+  <title>PESOnize | Labor Day Job Fair Frame Maker</title>
   <link rel="icon" type="image/png" href="Pesonized.png">
   <link href="cropper.min.css" rel="stylesheet">
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+    :root {
+      --ink: #10233f;
+      --muted: #5d6a7f;
+      --line: #d8e0ea;
+      --blue: #168ed0;
+      --blue-dark: #0c5d95;
+      --gold: #ffb21a;
+      --red: #e9352a;
+      --paper: #ffffff;
+      --soft: #f4f8fc;
+      --shadow: 0 22px 60px rgba(16, 35, 63, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background-color: white;
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(244, 248, 252, 0.9) 0%, rgba(255, 255, 255, 0.98) 52%),
+        radial-gradient(circle at top left, rgba(255, 178, 26, 0.22), transparent 34%),
+        radial-gradient(circle at 92% 18%, rgba(22, 142, 208, 0.18), transparent 32%);
+      min-height: 100vh;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(216, 224, 234, 0.75);
+    }
+
+    .nav {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 68px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.02rem;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .button {
+      border: 0;
+      min-height: 44px;
+      border-radius: 8px;
+      padding: 0 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .button-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      box-shadow: 0 12px 28px rgba(22, 142, 208, 0.28);
+    }
+
+    .button-accent {
+      color: var(--ink);
+      background: linear-gradient(135deg, #ffd15c, var(--gold));
+      box-shadow: 0 12px 28px rgba(255, 178, 26, 0.26);
+    }
+
+    .hero {
+      width: min(1180px, calc(100% - 32px));
+      min-height: calc(100vh - 68px);
+      margin: 0 auto;
+      padding: clamp(32px, 5vw, 72px) 0 36px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(330px, 0.88fr);
+      gap: clamp(28px, 5vw, 62px);
+      align-items: center;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+    }
+
+    .event-chip {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(22, 142, 208, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--blue-dark);
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    .event-chip svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    h1 {
+      margin: 20px 0 18px;
+      font-size: clamp(3rem, 7.5vw, 6.9rem);
+      line-height: 0.92;
+      letter-spacing: 0;
+      color: var(--ink);
+    }
+
+    .hero-copy p {
+      max-width: 620px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.28rem);
+      line-height: 1.62;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .frame-preview {
+      position: relative;
+      width: min(560px, 100%);
+      aspect-ratio: 1 / 1;
+      margin-top: clamp(26px, 5vw, 52px);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .sample-photo {
+      position: absolute;
+      inset: 13% 14% 19%;
+      aspect-ratio: 1 / 1;
+      border-radius: 999px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(232, 241, 248, 0.96)),
+        linear-gradient(45deg, transparent 44%, rgba(22, 142, 208, 0.13) 44% 56%, transparent 56%);
+      box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.74);
+      display: grid;
+      place-items: center;
+      color: rgba(16, 35, 63, 0.44);
+      font-weight: 900;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+    }
+
+    .hero-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      filter: drop-shadow(0 24px 34px rgba(16, 35, 63, 0.22));
+    }
+
+    .tool-panel {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(216, 224, 234, 0.86);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      letter-spacing: 0;
+    }
+
+    .panel-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .step-badge {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--red);
+      font-weight: 900;
+    }
+
+    .upload-zone {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .file-label {
+      min-height: 56px;
+      border: 1px dashed #8fb8d7;
+      border-radius: 8px;
+      background: #f7fbfe;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    #container {
+      gap: 10px;
+      padding: 14px;
+      cursor: pointer;
+      color: var(--blue-dark);
+      font-weight: 800;
       text-align: center;
     }
 
-    #logo {
-      width: 96px;
-      height: 96px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 12px;
+    .file-label svg {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
     }
 
     #upload {
-      margin-bottom: 20px;
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    #file-name {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
     }
 
     #preview-container {
-      width: 300px;
-      height: 300px;
-      margin: 0 auto 20px;
-      border: 2px solid #ccc;
-      background-color: white;
+      width: min(100%, 420px);
+      aspect-ratio: 1 / 1;
+      margin: 0 auto 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(45deg, #f0f4f8 25%, transparent 25% 75%, #f0f4f8 75%),
+        linear-gradient(45deg, #f0f4f8 25%, transparent 25% 75%, #f0f4f8 75%);
+      background-color: #fff;
+      background-position: 0 0, 12px 12px;
+      background-size: 24px 24px;
       overflow: hidden;
+      display: grid;
+      place-items: stretch;
     }
 
     #preview {
       width: 100%;
       height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    .empty-state {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    .empty-state svg {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 10px;
+      color: var(--blue);
     }
 
     canvas {
       display: block;
-      margin: 0 auto;
+      width: 100%;
+      height: 100%;
     }
 
-    button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 14px;
+    .adjust-controls {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      margin: 0 0 16px;
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #f7fbfe;
+      color: var(--blue-dark);
       cursor: pointer;
+    }
+
+    .icon-button:disabled,
+    .zoom-slider:disabled {
+      cursor: not-allowed;
+      opacity: 0.46;
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .zoom-slider {
+      width: 100%;
+      accent-color: var(--blue);
+    }
+
+    .tool-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .status-line {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      background: white;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 72px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      font-size: 0.94rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .frame-preview {
+        max-width: 520px;
+      }
+
+      .tool-panel {
+        max-width: 560px;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        min-height: 62px;
+      }
+
+      .hero {
+        width: min(100% - 24px, 1180px);
+        padding-top: 28px;
+      }
+
+      .tool-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-actions .button {
+        width: 100%;
+      }
+
+      .adjust-controls {
+        grid-template-columns: 40px 1fr 40px;
+      }
+
+      .adjust-controls .reset-control {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+
+      .frame-preview {
+        margin-top: 22px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 18px 0;
+      }
     }
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="PESOnize home">
+        <img class="brand-logo" src="logo.png" alt="PESO logo">
+        PESOnize
+      </a>
+    </nav>
+  </header>
 
-<div id="container">
-  <!-- <img id="logo" src="Pesonized.png" alt="PESOnize logo"> -->
-  <h1>PESOnize</h1>
-  <input type="file" id="upload" accept="image/*">
-    <br>
- <h2>Preview</h2> 
-  <div id="preview-container">
-    <div id="preview"></div>
-  </div>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="event-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 2v4"/>
+            <path d="M16 2v4"/>
+            <rect width="18" height="18" x="3" y="4" rx="2"/>
+            <path d="M3 10h18"/>
+          </svg>
+          Labor Day Job Fair 2026
+        </div>
+        <h1 id="hero-title">PESOnize</h1>
+        <p>Create a polished profile image for the Labor Day Job Fair campaign. Upload a photo, crop it cleanly, apply the official frame, and download a share-ready PNG without leaving your browser.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#maker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <path d="M17 8l-5-5-5 5"/>
+              <path d="M12 3v12"/>
+            </svg>
+            Start Upload
+          </a>
+        </div>
+        <div class="frame-preview" aria-hidden="true">
+          <div class="sample-photo">YOU</div>
+          <img class="hero-frame" src="Pesonized.png" alt="">
+        </div>
+      </div>
 
-  <button onclick="pesonize()" style="background: linear-gradient(to right, #f6a5a5, #a5d8f6);">PESOnize!</button>
-  <!-- <button onclick="pesonizeBlue()" style="background-color:rgb(125, 221, 245);">PESOnize Blue!</button> -->
-  <!-- <button onclick="pesonizePink()" style="background-color:rgb(255, 174, 255);">PESOnize Pink!</button> -->
-  <button onclick="downloadImage()"style="background-color:rgb(204, 255, 219);">Download</button>
-</div>
+      <section class="tool-panel" id="maker" aria-labelledby="maker-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="maker-title">Make your frame</h2>
+            <p>Choose a square-friendly photo, position it in the preview, then generate the framed image.</p>
+          </div>
+          <span class="step-badge" aria-hidden="true">01</span>
+        </div>
 
-<script src="cropper.min.js"></script>
-<script>
-  let cropper;
-  const overlayBlue = new Image();
-  overlayBlue.src = 'Pesonized.png';
+        <div class="upload-zone">
+          <label class="file-label" for="upload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <path d="M17 8l-5-5-5 5"/>
+              <path d="M12 3v12"/>
+            </svg>
+            Upload photo
+          </label>
+          <input type="file" id="upload" accept="image/*">
+          <div id="file-name">PNG, JPG, or any browser-supported image</div>
+        </div>
 
-  // const overlayPink = new Image();
-  // overlayPink.src = 'pink1.png';
+        <div id="preview-container">
+          <div id="preview">
+            <div class="empty-state">
+              <div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="18" height="18" x="3" y="3" rx="2"/>
+                  <circle cx="9" cy="9" r="2"/>
+                  <path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>
+                </svg>
+                Preview appears here
+              </div>
+            </div>
+          </div>
+        </div>
 
-  let currentOverlay = overlayBlue;
+        <div class="adjust-controls" aria-label="Photo adjustment controls">
+          <button class="icon-button" id="zoom-out" type="button" onclick="zoomPhoto(-0.1)" aria-label="Zoom out" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M8 11h6"/>
+              <path d="M21 21l-4.3-4.3"/>
+            </svg>
+          </button>
+          <input class="zoom-slider" id="zoom-range" type="range" min="0" max="100" value="0" oninput="setZoomFromSlider(this.value)" aria-label="Zoom photo" disabled>
+          <button class="icon-button" id="zoom-in" type="button" onclick="zoomPhoto(0.1)" aria-label="Zoom in" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M8 11h6"/>
+              <path d="M11 8v6"/>
+              <path d="M21 21l-4.3-4.3"/>
+            </svg>
+          </button>
+          <button class="icon-button reset-control" id="reset-crop" type="button" onclick="resetCrop()" aria-label="Reset crop" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 3-6.7"/>
+              <path d="M3 4v6h6"/>
+            </svg>
+          </button>
+        </div>
 
-  function initCropper(image) {
-    const preview = document.getElementById('preview');
-    preview.innerHTML = '';
+        <div class="tool-actions">
+          <button class="button button-primary" type="button" onclick="pesonize()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>
+              <path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>
+            </svg>
+            PESOnize
+          </button>
+          <button class="button button-accent" type="button" onclick="downloadImage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <path d="M7 10l5 5 5-5"/>
+              <path d="M12 15V3"/>
+            </svg>
+            Download
+          </button>
+        </div>
+        <div class="status-line" id="status">Upload a photo to begin.</div>
+      </section>
+    </section>
 
-    const img = new Image();
-    img.src = image;
-    img.id = 'cropper-image';
-    img.style.maxWidth = '100%';
-    preview.appendChild(img);
+  </main>
 
-    cropper = new Cropper(img, {
-      aspectRatio: 1,
-      viewMode: 1,
-      autoCropArea: 1,
-      background: false,
-      movable: false,
-      zoomable: false,
-      rotatable: false,
-      scalable: false,
-    });
-  }
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>PESOnize for Labor Day Job Fair 2026</span>
+      <span>Runs locally in your browser</span>
+    </div>
+  </footer>
 
-  // function pesonizeBlue() {
-  //   applyOverlay(overlayBlue);
-  // }
+  <script src="cropper.min.js"></script>
+  <script>
+    let cropper;
+    let uploadedImageSrc = '';
+    let framedImageUrl = '';
+    let zoomValue = 0;
+    const overlayBlue = new Image();
+    overlayBlue.src = 'Pesonized.png';
 
-  function pesonize() {
-    applyOverlay(overlayBlue);
-  }
+    let currentOverlay = overlayBlue;
 
-  // function pesonizePink() {
-  //   applyOverlay(overlayPink);
-  // }
-
-  function applyOverlay(overlayImage) {
-    if (!cropper) return alert('Please upload and crop an image first.');
-
-    currentOverlay = overlayImage;
-
-    const canvas = cropper.getCroppedCanvas({
-      width: 300,
-      height: 300,
-    });
-
-    composeFramedCanvas(canvas, overlayImage);
-
-    const preview = document.getElementById('preview');
-    preview.innerHTML = '';
-    preview.appendChild(canvas);
-  }
-
-  function composeFramedCanvas(canvas, overlayImage) {
-    const width = canvas.width;
-    const height = canvas.height;
-    const sourceCtx = canvas.getContext('2d');
-    const sourceImage = sourceCtx.getImageData(0, 0, width, height);
-
-    const overlayCanvas = document.createElement('canvas');
-    overlayCanvas.width = width;
-    overlayCanvas.height = height;
-
-    const overlayCtx = overlayCanvas.getContext('2d');
-    overlayCtx.drawImage(overlayImage, 0, 0, width, height);
-
-    const overlayData = overlayCtx.getImageData(0, 0, width, height);
-    const pixelCount = width * height;
-    const outside = new Uint8Array(pixelCount);
-    const queue = new Uint32Array(pixelCount);
-    const alphaThreshold = 10;
-    let head = 0;
-    let tail = 0;
-
-    function tryQueue(x, y) {
-      const index = y * width + x;
-      if (outside[index]) return;
-      if (overlayData.data[index * 4 + 3] >= alphaThreshold) return;
-      outside[index] = 1;
-      queue[tail++] = index;
+    function setStatus(message) {
+      document.getElementById('status').textContent = message;
     }
 
-    for (let x = 0; x < width; x++) {
-      tryQueue(x, 0);
-      tryQueue(x, height - 1);
+    function setAdjustControls(enabled) {
+      document.getElementById('zoom-out').disabled = !enabled;
+      document.getElementById('zoom-in').disabled = !enabled;
+      document.getElementById('zoom-range').disabled = !enabled;
+      document.getElementById('reset-crop').disabled = !enabled || !uploadedImageSrc;
     }
 
-    for (let y = 1; y < height - 1; y++) {
-      tryQueue(0, y);
-      tryQueue(width - 1, y);
-    }
+    function initCropper(image) {
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '';
+      uploadedImageSrc = image;
+      framedImageUrl = '';
+      zoomValue = 0;
+      document.getElementById('zoom-range').value = zoomValue;
 
-    while (head < tail) {
-      const index = queue[head++];
-      const x = index % width;
-      const y = Math.floor(index / width);
-
-      if (x > 0) tryQueue(x - 1, y);
-      if (x < width - 1) tryQueue(x + 1, y);
-      if (y > 0) tryQueue(x, y - 1);
-      if (y < height - 1) tryQueue(x, y + 1);
-    }
-
-    const maskedCanvas = document.createElement('canvas');
-    maskedCanvas.width = width;
-    maskedCanvas.height = height;
-
-    const maskedCtx = maskedCanvas.getContext('2d');
-    const maskedImage = maskedCtx.createImageData(width, height);
-
-    for (let i = 0; i < pixelCount; i++) {
-      const offset = i * 4;
-      const isTransparent = overlayData.data[offset + 3] < alphaThreshold;
-      const isFrameOpening = isTransparent && !outside[i];
-
-      if (isFrameOpening) {
-        maskedImage.data[offset] = sourceImage.data[offset];
-        maskedImage.data[offset + 1] = sourceImage.data[offset + 1];
-        maskedImage.data[offset + 2] = sourceImage.data[offset + 2];
-        maskedImage.data[offset + 3] = sourceImage.data[offset + 3];
+      if (cropper) {
+        cropper.destroy();
       }
+
+      const img = new Image();
+      img.src = image;
+      img.id = 'cropper-image';
+      img.style.maxWidth = '100%';
+      preview.appendChild(img);
+
+      cropper = new Cropper(img, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 1,
+        background: false,
+        movable: true,
+        zoomable: true,
+        zoomOnWheel: true,
+        wheelZoomRatio: 0.08,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        rotatable: false,
+        scalable: false,
+      });
+
+      setAdjustControls(true);
+      setStatus('Drag the photo, resize the crop box, or use zoom before applying the frame.');
     }
 
-    sourceCtx.clearRect(0, 0, width, height);
-    sourceCtx.fillStyle = 'white';
-    sourceCtx.fillRect(0, 0, width, height);
-    maskedCtx.putImageData(maskedImage, 0, 0);
-    sourceCtx.drawImage(maskedCanvas, 0, 0);
-    sourceCtx.drawImage(overlayCanvas, 0, 0);
-  }
+    function zoomPhoto(amount) {
+      if (!cropper) return;
+      cropper.zoom(amount);
+      zoomValue = Math.max(0, Math.min(100, zoomValue + (amount > 0 ? 10 : -10)));
+      document.getElementById('zoom-range').value = zoomValue;
+    }
 
-  function downloadImage() {
-  if (!cropper || !currentOverlay) return alert("Please upload and process an image first.");
+    function setZoomFromSlider(value) {
+      if (!cropper) return;
+      const nextValue = Number(value);
+      const delta = (nextValue - zoomValue) / 100;
+      cropper.zoom(delta);
+      zoomValue = nextValue;
+    }
 
-  // Adjusted canvas size for download
-  const canvas = cropper.getCroppedCanvas({
-    width: 800,
-    height: 800,
-  });
+    function resetCrop() {
+      if (!uploadedImageSrc) return;
+      initCropper(uploadedImageSrc);
+    }
 
-  composeFramedCanvas(canvas, currentOverlay);
+    function pesonize() {
+      applyOverlay(overlayBlue);
+    }
 
-  const link = document.createElement('a');
-  link.download = 'PESOnized.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-}
+    function applyOverlay(overlayImage) {
+      if (!cropper) {
+        alert('Please upload and crop an image first.');
+        return;
+      }
 
-  document.getElementById('upload').addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
+      currentOverlay = overlayImage;
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      initCropper(e.target.result);
-    };
-    reader.readAsDataURL(file);
-  });
-</script>
+      const canvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300,
+      });
 
+      const downloadCanvas = cropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+      });
+
+      composeFramedCanvas(canvas, overlayImage);
+      composeFramedCanvas(downloadCanvas, overlayImage);
+      framedImageUrl = downloadCanvas.toDataURL('image/png');
+      cropper.destroy();
+      cropper = null;
+
+      const preview = document.getElementById('preview');
+      preview.innerHTML = '';
+      preview.appendChild(canvas);
+      setAdjustControls(false);
+      document.getElementById('reset-crop').disabled = !uploadedImageSrc;
+      setStatus('Frame applied. Use reset to adjust the photo again, or download when ready.');
+    }
+
+    function composeFramedCanvas(canvas, overlayImage) {
+      const width = canvas.width;
+      const height = canvas.height;
+      const sourceCtx = canvas.getContext('2d');
+      const sourceImage = sourceCtx.getImageData(0, 0, width, height);
+
+      const overlayCanvas = document.createElement('canvas');
+      overlayCanvas.width = width;
+      overlayCanvas.height = height;
+
+      const overlayCtx = overlayCanvas.getContext('2d');
+      overlayCtx.drawImage(overlayImage, 0, 0, width, height);
+
+      const overlayData = overlayCtx.getImageData(0, 0, width, height);
+      const pixelCount = width * height;
+      const outside = new Uint8Array(pixelCount);
+      const queue = new Uint32Array(pixelCount);
+      const alphaThreshold = 10;
+      let head = 0;
+      let tail = 0;
+
+      function tryQueue(x, y) {
+        const index = y * width + x;
+        if (outside[index]) return;
+        if (overlayData.data[index * 4 + 3] >= alphaThreshold) return;
+        outside[index] = 1;
+        queue[tail++] = index;
+      }
+
+      for (let x = 0; x < width; x++) {
+        tryQueue(x, 0);
+        tryQueue(x, height - 1);
+      }
+
+      for (let y = 1; y < height - 1; y++) {
+        tryQueue(0, y);
+        tryQueue(width - 1, y);
+      }
+
+      while (head < tail) {
+        const index = queue[head++];
+        const x = index % width;
+        const y = Math.floor(index / width);
+
+        if (x > 0) tryQueue(x - 1, y);
+        if (x < width - 1) tryQueue(x + 1, y);
+        if (y > 0) tryQueue(x, y - 1);
+        if (y < height - 1) tryQueue(x, y + 1);
+      }
+
+      const maskedCanvas = document.createElement('canvas');
+      maskedCanvas.width = width;
+      maskedCanvas.height = height;
+
+      const maskedCtx = maskedCanvas.getContext('2d');
+      const maskedImage = maskedCtx.createImageData(width, height);
+
+      for (let i = 0; i < pixelCount; i++) {
+        const offset = i * 4;
+        const isTransparent = overlayData.data[offset + 3] < alphaThreshold;
+        const isFrameOpening = isTransparent && !outside[i];
+
+        if (isFrameOpening) {
+          maskedImage.data[offset] = sourceImage.data[offset];
+          maskedImage.data[offset + 1] = sourceImage.data[offset + 1];
+          maskedImage.data[offset + 2] = sourceImage.data[offset + 2];
+          maskedImage.data[offset + 3] = sourceImage.data[offset + 3];
+        }
+      }
+
+      sourceCtx.clearRect(0, 0, width, height);
+      sourceCtx.fillStyle = 'white';
+      sourceCtx.fillRect(0, 0, width, height);
+      maskedCtx.putImageData(maskedImage, 0, 0);
+      sourceCtx.drawImage(maskedCanvas, 0, 0);
+      sourceCtx.drawImage(overlayCanvas, 0, 0);
+    }
+
+    function downloadImage() {
+      if (!cropper && !framedImageUrl) {
+        alert('Please upload and process an image first.');
+        return;
+      }
+
+      if (framedImageUrl) {
+        const link = document.createElement('a');
+        link.download = 'PESOnized.png';
+        link.href = framedImageUrl;
+        link.click();
+        setStatus('Downloaded PESOnized.png.');
+        return;
+      }
+
+      const canvas = cropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+      });
+
+      composeFramedCanvas(canvas, currentOverlay);
+
+      const link = document.createElement('a');
+      link.download = 'PESOnized.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      setStatus('Downloaded PESOnized.png.');
+    }
+
+    document.getElementById('upload').addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      document.getElementById('file-name').textContent = file.name;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        initCropper(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
 </body>
 </html>
